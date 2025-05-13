@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Somali Presidential Election</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f0f0f0;
+      padding: 20px;
+      text-align: center;
+    }
+    .container {
+      max-width: 500px;
+      margin: auto;
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+    }
+    input, button {
+      padding: 10px;
+      margin: 10px;
+      font-size: 16px;
+    }
+    .hidden { display: none; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1> Somali Presidential Election</h1>
+    <p id="timer">Time Left: 5:00</p>
+    <input type="text" id="nationalId" placeholder="Enter National ID" />
+    <div>
+      <button onclick="vote('Hassan Sheikh')">Vote for Hassan Sheikh</button>
+      <button onclick="vote('Farmaajo')">Vote for Farmaajo</button>
+    </div>
+    <p id="message"></p>
+    <div id="results" class="hidden">
+      <h2>📊 Election Results</h2>
+      <p id="hassanResult"></p>
+      <p id="farmaajoResult"></p>
+      <h3 id="winner"></h3>
+    </div>
+  </div>
+
+  <script>
+    const validIds = new Set([
+      "SOM1001", "SOM1002", "SOM1003", "SOM1004", "SOM1005",
+      "SOM1006", "SOM1007", "SOM1008", "SOM1009", "SOM1010",
+      "SOM1011", "SOM1012", "SOM1013", "SOM1014", "SOM1015",
+      "SOM1016", "SOM1017", "SOM1018", "SOM1019", "SOM1020",
+      "SOM1021", "SOM1022", "SOM1023", "SOM1024", "SOM1025",
+      "SOM1026", "SOM1027", "SOM1028", "SOM1029", "SOM1030",
+      "SOM1031", "SOM1032", "SOM1033", "SOM1034", "SOM1035",
+      "SOM1036", "SOM1037", "SOM1038", "SOM1039", "SOM1040",
+      "SOM1041", "SOM1042", "SOM1043", "SOM1044", "SOM1045",
+      "SOM1046", "SOM1047", "SOM1048", "SOM1049", "SOM1050"
+    ]);
+    const votedIds = new Set();
+    const votes = { "Hassan Sheikh": 0, "Farmaajo": 0 };
+    let votingOpen = true;
+
+    function vote(candidate) {
+      if (!votingOpen) return;
+      const id = document.getElementById("nationalId").value.trim().toUpperCase();
+      const msg = document.getElementById("message");
+
+      if (!id) {
+        msg.textContent = "❗ Please enter your National ID.";
+        return;
+      }
+      if (!validIds.has(id)) {
+        msg.textContent = "❌ National ID does not exist.";
+        return;
+      }
+      if (votedIds.has(id)) {
+        msg.textContent = "⚠️ You have already voted.";
+        return;
+      }
+
+      votes[candidate]++;
+      votedIds.add(id);
+      msg.textContent = `✅ Thank you! You voted for ${candidate}.`;
+      document.getElementById("nationalId").value = "";
+    }
+
+    function endElection() {
+      votingOpen = false;
+      const total = votes["Hassan Sheikh"] + votes["Farmaajo"];
+      const percentH = total ? ((votes["Hassan Sheikh"] / total) * 100).toFixed(2) : 0;
+      const percentF = total ? ((votes["Farmaajo"] / total) * 100).toFixed(2) : 0;
+
+      document.getElementById("results").classList.remove("hidden");
+      document.getElementById("hassanResult").textContent = `Hassan Sheikh: ${votes["Hassan Sheikh"]} votes (${percentH}%)`;
+      document.getElementById("farmaajoResult").textContent = `Farmaajo: ${votes["Farmaajo"]} votes (${percentF}%)`;
+
+      let winnerText = "🤝 It's a tie!";
+      if (votes["Hassan Sheikh"] > votes["Farmaajo"]) winnerText = "🎉 Hassan Sheikh is the next President!";
+      else if (votes["Farmaajo"] > votes["Hassan Sheikh"]) winnerText = "🎉 Farmaajo is the next President!";
+
+      document.getElementById("winner").textContent = winnerText;
+    }
+
+    function startTimer(duration) {
+      let timer = duration, minutes, seconds;
+      const display = document.getElementById("timer");
+      const interval = setInterval(() => {
+        minutes = String(Math.floor(timer / 60)).padStart(2, '0');
+        seconds = String(timer % 60).padStart(2, '0');
+        display.textContent = `Time Left: ${minutes}:${seconds}`;
+        if (--timer < 0) {
+          clearInterval(interval);
+          display.textContent = "⏰ Election Over";
+          endElection();
+        }
+      }, 1000);
+    }
+
+    startTimer(5 * 60); // 5 minutes in seconds
+  </script>
+</body>
+</html>
